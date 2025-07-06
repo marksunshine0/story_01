@@ -1,0 +1,1090 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>小企鹅与小松鼠的故事</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdn.jsdelivr.net/npm/font-awesome@4.7.0/css/font-awesome.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.8/dist/chart.umd.min.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=ZCOOL+XiaoWei&family=ZCOOL+QingKe+HuangYou&display=swap"
+        rel="stylesheet">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        penguin: '#2D4263',
+                        squirrel: '#C84B31',
+                        ice: '#ECDBBA',
+                        forest: '#191919',
+                        love: '#DA0037'
+                    },
+                    fontFamily: {
+                        story: ['"ZCOOL XiaoWei"', 'serif'],
+                    },
+                }
+            }
+        }
+    </script>
+    <style type="text/tailwindcss">
+        @layer utilities {
+            .text-shadow {
+                text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+            }
+
+            .animate-float {
+                animation: float 3s ease-in-out infinite;
+            }
+
+            .animate-pulse-slow {
+                animation: pulse 4s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+            }
+
+            .animate-appear {
+                animation: appear 0.5s ease-out forwards;
+            }
+
+            .animate-slide-up {
+                animation: slide-up 0.7s ease-out forwards;
+            }
+
+            .animate-slide-right {
+                animation: slide-right 0.7s ease-out forwards;
+            }
+
+            .animate-slide-left {
+                animation: slide-left 0.7s ease-out forwards;
+            }
+
+            .animate-fade-in {
+                animation: fade-in 1s ease-out forwards;
+            }
+
+            .animate-sparkle {
+                animation: sparkle 1.5s ease-in-out infinite;
+            }
+
+            .bg-gradient-love {
+                background: linear-gradient(135deg, #ff9a9e 0%, #fad0c4 99%, #fad0c4 100%);
+            }
+
+            .filter-blur {
+                filter: blur(3px);
+            }
+        }
+
+        @keyframes float {
+            0% {
+                transform: translateY(0px);
+            }
+
+            50% {
+                transform: translateY(-10px);
+            }
+
+            100% {
+                transform: translateY(0px);
+            }
+        }
+
+        @keyframes appear {
+            0% {
+                opacity: 0;
+                transform: scale(0.8);
+            }
+
+            100% {
+                opacity: 1;
+                transform: scale(1);
+            }
+        }
+
+        @keyframes slide-up {
+            0% {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+
+            100% {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes slide-right {
+            0% {
+                opacity: 0;
+                transform: translateX(-30px);
+            }
+
+            100% {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        @keyframes slide-left {
+            0% {
+                opacity: 0;
+                transform: translateX(30px);
+            }
+
+            100% {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        @keyframes fade-in {
+            0% {
+                opacity: 0;
+            }
+
+            100% {
+                opacity: 1;
+            }
+        }
+
+        @keyframes sparkle {
+            0%,
+            100% {
+                opacity: 1;
+            }
+
+            50% {
+                opacity: 0.6;
+            }
+        }
+
+        /* 横向对话框样式 */
+        #penguin-dialog {
+            top: -40px; /* 调整小企鹅对话框的高度 */
+            left: 50%;
+            transform: translateX(-50%);
+            white-space: nowrap;
+        }
+
+        #squirrel-dialog {
+            top: -20px; /* 调整小松鼠对话框的高度 */
+            left: 50%;
+            transform: translateX(-50%);
+            white-space: nowrap;
+        }
+
+        /* 整体缩小容器 */
+        main {
+            transform: scale(0.8);
+            transform-origin: top center;
+        }
+    </style>
+</head>
+
+<body class="bg-gradient-to-br from-blue-50 to-indigo-100 min-h-screen overflow-x-hidden font-story">
+    <!-- 背景音乐 -->
+    <audio id="bgm" src="jtyxjdn.mp3" loop autoplay muted></audio>
+    <!-- 导航栏 -->
+    <nav class="fixed top-0 left-0 right-0 z-50 bg-white/80 backdrop-blur-md shadow-md transition-all duration-300"
+        id="navbar">
+        <div class="container mx-auto px-4 py-3 flex justify-between items-center">
+            <h1 class="text-2xl font-bold text-penguin">
+                <i class="text-love"></i> 🐧&🐿️
+            </h1>
+            <div class="flex space-x-4">
+                <button class="text-sm px-3 py-1 rounded-full bg-penguin/10 hover:bg-penguin/20 transition-all"
+                    id="prev-btn">
+                    <i class="fa fa-step-backward mr-1"></i> 上一幕
+                </button>
+                <button class="text-sm px-3 py-1 rounded-full bg-love/10 hover:bg-love/20 transition-all"
+                    id="next-btn">
+                    下一幕 <i class="fa fa-step-forward ml-1"></i>
+                </button>
+                <button class="text-sm px-3 py-1 rounded-full bg-forest/10 hover:bg-forest/20 transition-all"
+                    id="restart-btn">
+                    <i class="fa fa-refresh mr-1"></i> 重新开始
+                </button>
+            </div>
+        </div>
+    </nav>
+
+    <!-- 故事容器 -->
+    <main class="container mx-auto px-4 pt-24 pb-16">
+        <!-- 故事标题 -->
+        <div class="text-center mb-12 animate-appear">
+            <h2 class="text-[clamp(2rem,5vw,3.5rem)] font-bold text-penguin mb-3 text-shadow">
+                <span class="text-squirrel">小企鹅</span>与<span class="text-penguin">小松鼠</span>的故事
+            </h2>
+            <p class="text-gray-600 text-lg max-w-2xl mx-auto">当冰雪世界遇见了森林精灵，他们的故事就此展开...</p>
+            <div class="mt-6 inline-block">
+                <div class="h-1 w-32 bg-gradient-to-r from-penguin via-love to-squirrel rounded-full"></div>
+            </div>
+        </div>
+
+        <!-- 场景容器 -->
+        <div class="relative w-full max-w-6xl mx-auto h-[50vh] min-h-[360px] bg-white rounded-2xl shadow-xl overflow-hidden mb-8"
+            id="scene-container">
+            <!-- 场景背景 -->
+            <div class="absolute inset-0 bg-blue-100 transition-all duration-1000" id="scene-bg"></div>
+
+            <!-- 雪花效果 -->
+            <div class="absolute inset-0 pointer-events-none" id="snow-container"></div>
+
+            <!-- 小企鹅 -->
+            <div class="absolute bottom-10 left-1/4 transform -translate-x-1/2 transition-all duration-700 ease-out"
+                id="penguin">
+                <div class="relative w-24 h-36 animate-float">
+                    <!-- 企鹅身体 -->
+                    <div class="absolute bottom-0 w-full h-32 bg-penguin rounded-t-full">
+                        <!-- 企鹅肚皮 -->
+                        <div class="absolute bottom-4 left-1/2 transform -translate-x-1/2 w-16 h-20 bg-white rounded-t-full"></div>
+                        <!-- 企鹅眼睛 -->
+                        <div class="absolute top-10 left-1/4 w-4 h-4 bg-white rounded-full">
+                            <div class="absolute right-1 top-1 w-2 h-2 bg-black rounded-full"></div>
+                        </div>
+                        <div class="absolute top-10 right-1/4 w-4 h-4 bg-white rounded-full">
+                            <div class="absolute right-1 top-1 w-2 h-2 bg-black rounded-full"></div>
+                        </div>
+                        <!-- 企鹅腮红 -->
+                        <div class="absolute top-16 left-4 w-3 h-3 bg-love/20 rounded-full"></div>
+                        <div class="absolute top-16 right-4 w-3 h-3 bg-love/20 rounded-full"></div>
+                        <!-- 企鹅嘴巴 -->
+                        <div class="absolute top-14 left-1/2 transform -translate-x-1/2 w-6 h-3 bg-yellow-500 rounded-sm rotate-180"></div>
+                        <!-- 企鹅翅膀 -->
+                        <div class="absolute top-16 left-0 w-6 h-10 bg-penguin rounded-full transform -rotate-45"></div>
+                        <div class="absolute top-16 right-0 w-6 h-10 bg-penguin rounded-full transform rotate-45"></div>
+                    </div>
+                    <!-- 企鹅脚 -->
+                    <div class="absolute bottom-0 left-1/4 w-4 h-6 bg-yellow-500 rounded-full transform -rotate-10"></div>
+                    <div class="absolute bottom-0 right-1/4 w-4 h-6 bg-yellow-500 rounded-full transform rotate-10"></div>
+                </div>
+                <!-- 企鹅对话框 -->
+                <div class="absolute -top-40 left-1/2 transform -translate-x-1/2 bg-white rounded-lg p-2 shadow-lg opacity-0 transition-opacity duration-300"
+                    id="penguin-dialog">
+                    <p class="text-sm text-gray-800" id="penguin-text"></p>
+                    <div class="absolute bottom-[-8px] left-1/2 transform -translate-x-1/2 w-4 h-4 bg-white rotate-45"></div>
+                </div>
+            </div>
+
+            <!-- 小松鼠 -->
+            <div class="absolute bottom-10 right-1/4 transform translate-x-1/2 transition-all duration-700 ease-out"
+                id="squirrel">
+                <div class="relative w-20 h-32 animate-float">
+                    <!-- 松鼠身体 -->
+                    <div class="absolute bottom-0 w-full h-28 bg-squirrel rounded-t-full">
+                        <!-- 松鼠肚皮 -->
+                        <div class="absolute bottom-4 left-1/2 transform -translate-x-1/2 w-12 h-16 bg-yellow-100 rounded-t-full"></div>
+                        <!-- 松鼠眼睛 -->
+                        <div class="absolute top-8 left-1/4 w-3 h-3 bg-white rounded-full">
+                            <div class="absolute right-1 top-1 w-1.5 h-1.5 bg-black rounded-full"></div>
+                        </div>
+                        <div class="absolute top-8 right-1/4 w-3 h-3 bg-white rounded-full">
+                            <div class="absolute right-1 top-1 w-1.5 h-1.5 bg-black rounded-full"></div>
+                        </div>
+                        <!-- 松鼠腮红 -->
+                        <div class="absolute top-14 left-3 w-2 h-2 bg-love/20 rounded-full"></div>
+                        <div class="absolute top-14 right-3 w-2 h-2 bg-love/20 rounded-full"></div>
+                        <!-- 松鼠嘴巴 -->
+                        <div class="absolute top-12 left-1/2 transform -translate-x-1/2 w-4 h-2 bg-yellow-500 rounded-sm"></div>
+                        <!-- 松鼠耳朵 -->
+                        <div class="absolute top-[-6px] left-2 w-5 h-5 bg-squirrel rounded-full"></div>
+                        <div class="absolute top-[-6px] right-2 w-5 h-5 bg-squirrel rounded-full"></div>
+                        <!-- 松鼠尾巴 -->
+                        <div class="absolute top-[-12px] right-[-10px] w-16 h-16 bg-squirrel rounded-full"></div>
+                    </div>
+                    <!-- 松鼠脚 -->
+                    <div class="absolute bottom-0 left-1/4 w-3 h-5 bg-squirrel rounded-full transform -rotate-10"></div>
+                    <div class="absolute bottom-0 right-1/4 w-3 h-5 bg-squirrel rounded-full transform rotate-10"></div>
+                </div>
+                <!-- 松鼠对话框 -->
+                <div class="absolute -top-20 left-1/2 transform -translate-x-1/2 bg-white rounded-lg p-2 shadow-lg opacity-0 transition-opacity duration-300"
+                    id="squirrel-dialog">
+                    <p class="text-sm text-gray-800" id="squirrel-text"></p>
+                    <div class="absolute bottom-[-8px] left-1/2 transform -translate-x-1/2 w-4 h-4 bg-white rotate-45"></div>
+                </div>
+            </div>
+
+            <!-- 场景物品 -->
+            <div class="absolute bottom-0 left-0 right-0 h-16 bg-blue-300/30 rounded-t-3xl" id="ground"></div>
+
+            <!-- 树 -->
+            <div class="absolute bottom-16 right-10 w-16 h-40 opacity-0 transition-opacity duration-500" id="tree">
+                <div class="absolute bottom-0 left-1/2 transform -translate-x-1/2 w-4 h-24 bg-brown-700"></div>
+                <div class="absolute bottom-20 left-1/2 transform -translate-x-1/2 w-16 h-16 bg-green-700 rounded-full"></div>
+                <div class="absolute bottom-28 left-1/2 transform -translate-x-1/2 w-12 h-12 bg-green-800 rounded-full"></div>
+                <div class="absolute bottom-34 left-1/2 transform -translate-x-1/2 w-8 h-8 bg-green-900 rounded-full"></div>
+            </div>
+
+            <!-- 相机 -->
+            <div class="absolute top-1/3 left-1/2 transform -translate-x-1/2 w-10 h-8 bg-gray-500 rounded-lg opacity-0 transition-all duration-500"
+                id="camera">
+                <div class="absolute top-1 left-1/2 transform -translate-x-1/2 w-6 h-4 bg-gray-700 rounded"></div>
+                <div class="absolute bottom-1 left-1/2 transform -translate-x-1/2 w-8 h-2 bg-gray-600 rounded"></div>
+            </div>
+
+            <!-- 食物 -->
+            <div class="absolute bottom-20 left-1/2 transform -translate-x-1/2 w-12 h-12 opacity-0 transition-opacity duration-500"
+                id="food">
+                <div class="absolute bottom-0 w-full h-8 bg-red-500 rounded-lg"></div>
+                <div class="absolute bottom-8 w-full h-4 bg-red-600 rounded-t-lg"></div>
+                <div class="absolute top-0 left-1/2 transform -translate-x-1/2 w-8 h-4 bg-yellow-500 rounded-full"></div>
+            </div>
+
+            <!-- 爱心 -->
+            <div class="absolute top-1/4 left-1/2 transform -translate-x-1/2 opacity-0 transition-opacity duration-500"
+                id="heart">
+                <svg viewBox="0 0 24 24" class="w-12 h-12 text-love animate-pulse-slow">
+                    <path
+                        d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z">
+                    </path>
+                </svg>
+            </div>
+
+            <!-- 乌云 -->
+            <div class="absolute top-10 left-1/2 transform -translate-x-1/2 w-32 h-16 opacity-0 transition-opacity duration-500"
+                id="cloud">
+                <div class="absolute bottom-0 w-full h-10 bg-gray-500 rounded-full"></div>
+                <div class="absolute bottom-4 left-4 w-12 h-12 bg-gray-500 rounded-full"></div>
+                <div class="absolute bottom-4 right-4 w-12 h-12 bg-gray-500 rounded-full"></div>
+                <div class="absolute bottom-4 left-1/2 transform -translate-x-1/2 w-16 h-16 bg-gray-500 rounded-full"></div>
+            </div>
+
+            <!-- 雨 -->
+            <div class="absolute inset-0 pointer-events-none opacity-0 transition-opacity duration-500" id="rain">
+                <div class="absolute w-1 h-3 bg-blue-400 rounded-full animate-slide-up" style="left: 10%; top: 10%; animation-delay: 0s;"></div>
+                <div class="absolute w-1 h-3 bg-blue-400 rounded-full animate-slide-up" style="left: 20%; top: 5%; animation-delay: 0.2s;"></div>
+                <div class="absolute w-1 h-3 bg-blue-400 rounded-full animate-slide-up" style="left: 30%; top: 15%; animation-delay: 0.4s;"></div>
+                <div class="absolute w-1 h-3 bg-blue-400 rounded-full animate-slide-up" style="left: 40%; top: 8%; animation-delay: 0.6s;"></div>
+                <div class="absolute w-1 h-3 bg-blue-400 rounded-full animate-slide-up" style="left: 50%; top: 12%; animation-delay: 0.8s;"></div>
+                <div class="absolute w-1 h-3 bg-blue-400 rounded-full animate-slide-up" style="left: 60%; top: 7%; animation-delay: 1s;"></div>
+                <div class="absolute w-1 h-3 bg-blue-400 rounded-full animate-slide-up" style="left: 70%; top: 14%; animation-delay: 1.2s;"></div>
+                <div class="absolute w-1 h-3 bg-blue-400 rounded-full animate-slide-up" style="left: 80%; top: 9%; animation-delay: 1.4s;"></div>
+                <div class="absolute w-1 h-3 bg-blue-400 rounded-full animate-slide-up" style="left: 90%; top: 11%; animation-delay: 1.6s;"></div>
+            </div>
+
+            <!-- 彩虹 -->
+            <div class="absolute bottom-0 left-1/2 transform -translate-x-1/2 w-64 h-32 opacity-0 transition-opacity duration-500"
+                id="rainbow">
+                <svg viewBox="0 0 200 100" class="w-full h-full">
+                    <circle cx="100" cy="100" r="80" fill="none" stroke="#FF6663" stroke-width="10"></circle>
+                    <circle cx="100" cy="100" r="70" fill="none" stroke="#FEB144" stroke-width="10"></circle>
+                    <circle cx="100" cy="100" r="60" fill="none" stroke="#FDFD97" stroke-width="10"></circle>
+                    <circle cx="100" cy="100" r="50" fill="none" stroke="#9EE09E" stroke-width="10"></circle>
+                    <circle cx="100" cy="100" r="40" fill="none" stroke="#9EC1CF" stroke-width="10"></circle>
+                    <circle cx="100" cy="100" r="30" fill="none" stroke="#CC99C9" stroke-width="10"></circle>
+                </svg>
+            </div>
+        </div>
+
+        <!-- 故事文本 -->
+        <div class="bg-white/80 backdrop-blur-sm rounded-xl shadow-lg p-6 max-w-6xl mx-auto mb-12 transform transition-all duration-500"
+            id="story-text">
+            <h3 class="text-xl font-bold text-penguin mb-4" id="scene-title">序幕</h3>
+            <p class="text-gray-700 leading-relaxed" id="scene-description">
+                在一个宁静的冰雪世界里，住着一只可爱的小企鹅。她每天都过着平静的生活，直到有一天，一只小松鼠闯进了她的世界...
+            </p>
+        </div>
+
+        <!-- 控制按钮 -->
+        <div class="flex justify-center space-x-4 mb-12">
+            <button class="px-6 py-3 bg-penguin text-white rounded-full shadow-lg hover:bg-penguin/80 transition-all transform hover:-translate-y-1"
+                id="auto-play-btn">
+                <i class="fa fa-play-circle mr-2"></i>自动播放
+            </button>
+            <button class="px-6 py-3 bg-gray-300 text-gray-700 rounded-full shadow-lg hover:bg-gray-200 transition-all transform hover:-translate-y-1"
+                id="pause-btn" disabled>
+                <i class="fa fa-pause-circle mr-2"></i>暂停
+            </button>
+        </div>
+
+        <!-- 互动元素 -->
+        <div class="bg-white/80 backdrop-blur-sm rounded-xl shadow-lg p-6 max-w-6xl mx-auto text-center">
+            <h3 class="text-xl font-bold text-penguin mb-4">你觉得接下来会发生什么？</h3>
+            <div class="flex flex-wrap justify-center gap-4 mb-6">
+                <button class="px-4 py-2 bg-blue-100 hover:bg-blue-200 text-blue-800 rounded-full transition-all"
+                    id="option-1">
+                    小松鼠向小企鹅表白
+                </button>
+                <button class="px-4 py-2 bg-green-100 hover:bg-green-200 text-green-800 rounded-full transition-all"
+                    id="option-2">
+                    他们一起建造了一个温暖的家
+                </button>
+                <button class="px-4 py-2 bg-purple-100 hover:bg-purple-200 text-purple-800 rounded-full transition-all"
+                    id="option-3">
+                    小松鼠不得不回到自己的森林
+                </button>
+                <button class="px-4 py-2 bg-yellow-100 hover:bg-yellow-200 text-yellow-800 rounded-full transition-all"
+                    id="option-4">
+                    他们遇到了其他动物朋友
+                </button>
+            </div>
+            <p class="text-gray-500 text-sm">
+                故事未完待续... 请期待下一集的更新！
+            </p>
+        </div>
+    </main>
+
+    <!-- 页脚 -->
+    <footer class="bg-penguin text-white py-8">
+        <div class="container mx-auto px-4 text-center">
+            <p class="mb-4">
+                <i class="fa fa-heart text-love"></i> 小企鹅与小松鼠的故事 <i class="fa fa-heart text-love"></i>
+            </p>
+            <p class="text-sm text-white/70">
+                版权所有 © 2025 陈粒粒工作室 | 倾情制作
+            </p>
+        </div>
+    </footer>
+
+    <script>
+        // 故事场景数据
+        const scenes = [
+            {
+                title: "意外相识",
+                description: "小松鼠不小心迷路来到了这里，看到了正在散步的小企鹅",
+                bgColor: "#ECF9FF",
+                penguinPos: "left-1/3",
+                squirrelPos: "right-1/3",
+                penguinText: "你好呀，你怎么来到这里啦？",
+                squirrelText: "我不小心迷路了，这里好冷呀。",
+                elements: {
+                    tree: { opacity: 0 },
+                    camera: { opacity: 0 },
+                    food: { opacity: 0 },
+                    heart: { opacity: 0 },
+                    cloud: { opacity: 0 },
+                    rain: { opacity: 0 },
+                    rainbow: { opacity: 0 }
+                }
+            },
+            {
+                title: "意外相识",
+                description: "小松鼠不小心迷路来到了这里，看到了正在散步的小企鹅",
+                bgColor: "#ECF9FF",
+                penguinPos: "left-1/3",
+                squirrelPos: "right-1/3",
+                penguinText: "你好呀，你怎么来到这里啦？",
+                squirrelText: "我不小心迷路了，这里好冷呀。",
+                elements: {
+                    tree: { opacity: 0 },
+                    camera: { opacity: 0 },
+                    food: { opacity: 0 },
+                    heart: { opacity: 0 },
+                    cloud: { opacity: 0 },
+                    rain: { opacity: 0 },
+                    rainbow: { opacity: 0 }
+                }
+            },
+            {
+                title: "相谈甚欢",
+                description: "小松鼠开始和小企鹅聊天，分享彼此的事情",
+                bgColor: "#E0F4FF",
+                penguinPos: "left-1/3",
+                squirrelPos: "right-1/3",
+                penguinText: "原来你生活在森林里，那里一定很有趣！",
+                squirrelText: "是呀，森林里有好多好玩的，你有机会一定要去看看。",
+                elements: {
+                    tree: { opacity: 0 },
+                    camera: { opacity: 0 },
+                    food: { opacity: 0 },
+                    heart: { opacity: 0 },
+                    cloud: { opacity: 0 },
+                    rain: { opacity: 0 },
+                    rainbow: { opacity: 0 }
+                }
+            },
+            {
+                title: "相约看烟花",
+                description: "小松鼠邀请小企鹅去看跨年烟花",
+                bgColor: "#B6E2A1",
+                penguinPos: "left-1/3",
+                squirrelPos: "right-1/3",
+                penguinText: "好呀好呀！(犹豫但想去)",
+                squirrelText: "跨年烟火特别美 要不要一起去看呀。",
+                elements: {
+                    tree: { opacity: 0 },
+                    camera: { opacity: 0 },
+                    food: { opacity: 0 },
+                    heart: { opacity: 0 },
+                    cloud: { opacity: 0 },
+                    rain: { opacity: 0 },
+                    rainbow: { opacity: 0 }
+                }
+            },
+            {
+                title: "去看海鸥",
+                description: "小松鼠说：你得特别想去才行 ",
+                bgColor: "#B6E2A1",
+                penguinPos: "left-[35%]",
+                squirrelPos: "right-[35%]",
+                penguinText: "去看了海鸥啦 今天真开心~",
+                squirrelText: "我还知道很多好玩的地方，下次带你去更多地方！",
+                elements: {
+                    tree: { opacity: 0 },
+                    camera: { opacity: 1, top: "1/3" },
+                    food: { opacity: 0 },
+                    heart: { opacity: 0 },
+                    cloud: { opacity: 0 },
+                    rain: { opacity: 0 },
+                    rainbow: { opacity: 0 }
+                }
+            },
+            {
+                title: "吃喝玩乐",
+                description: "逛公园 逛博物馆 动物园 去吃很多好吃的......",
+                bgColor: "#B6E2A1",
+                penguinPos: "left-1/4",
+                squirrelPos: "right-1/4",
+                penguinText: "和你一起玩太开心啦！",
+                squirrelText: "我也是，希望以后能一直这样。",
+                elements: {
+                    tree: { opacity: 0 },
+                    camera: { opacity: 1, top: "1/3" },
+                    food: { opacity: 0 },
+                    heart: { opacity: 0 },
+                    cloud: { opacity: 0 },
+                    rain: { opacity: 0 },
+                    rainbow: { opacity: 0 }
+                }
+            },
+            {
+                title: "不舍🥺",
+                description: "小企鹅开始不舍和小松鼠分开...",
+                bgColor: "#B6E2A1",
+                penguinPos: "left-[35%]",
+                squirrelPos: "right-[35%]",
+                penguinText: "感觉时间过得好快呀。",
+                squirrelText: "是啊，但以后还有很多时间可以一起玩。",
+                elements: {
+                    tree: { opacity: 0 },
+                    camera: { opacity: 1, top: "1/3" },
+                    food: { opacity: 0 },
+                    heart: { opacity: 0 },
+                    cloud: { opacity: 0 },
+                    rain: { opacity: 0 },
+                    rainbow: { opacity: 0 }
+                }
+            },
+            {
+                title: "拍照📸",
+                description: "小松鼠给小企鹅拍了好看的照片",
+                bgColor: "#B6E2A1",
+                penguinPos: "left-1/4",
+                squirrelPos: "right-1/4",
+                penguinText: "今天真的很开心！",
+                squirrelText: "哈哈，以后还有更多精彩等我们呢",
+                elements: {
+                    tree: { opacity: 0 },
+                    camera: { opacity: 1, top: "1/3" },
+                    food: { opacity: 0 },
+                    heart: { opacity: 0 },
+                    cloud: { opacity: 0 },
+                    rain: { opacity: 0 },
+                    rainbow: { opacity: 0 }
+                }
+            },
+            {
+                title: "心动💓",
+                description: "不知不觉中，小企鹅发现自己喜欢上了这个傻傻但又温暖可爱的小松鼠",
+                bgColor: "#FFC8DD",
+                // 调整站位
+                penguinPos: "left-[35%]",
+                squirrelPos: "right-[35%]",
+                penguinText: "好呀好呀（一想到要去见小松鼠 好像就能抵掉一大半的不开心...）",
+                squirrelText: "别不开心啦 晚上我们去吃烧烤吧。",
+                elements: {
+                    tree: { opacity: 0 },
+                    camera: { opacity: 0 },
+                    food: { opacity: 0 },
+                    heart: { opacity: 0 },
+                    cloud: { opacity: 0 },
+                    rain: { opacity: 0 },
+                    rainbow: { opacity: 0 }
+                }
+            },
+            {
+                title: "小企鹅的自我斗争",
+                description: "小企鹅也不知道自己为什么会有失望的心态 明明小松鼠也没做错什么",
+                bgColor: "#E0E0E0",
+                penguinPos: "left-1/4",
+                squirrelPos: "right-1/4",
+                penguinText: "讨厌你（也不是真的讨厌 😔）",
+                squirrelText: "哎呀 月底我们出去玩好不好...",
+                elements: {
+                    tree: { opacity: 0 },
+                    camera: { opacity: 0 },
+                    food: { opacity: 0 },
+                    heart: { opacity: 0 },
+                    cloud: { opacity: 1, top: "10%" },
+                    rain: { opacity: 1 },
+                    rainbow: { opacity: 0 }
+                }
+            },
+            {
+                title: "期望落空😞",
+                description: "小企鹅已经好久没见到小松鼠了...",
+                bgColor: "#E0E0E0",
+                penguinPos: "left-1/4",
+                squirrelPos: "right-1/4",
+                penguinText: "不开心...",
+                squirrelText: "等下次我们出去玩",
+                elements: {
+                    tree: { opacity: 0 },
+                    camera: { opacity: 0 },
+                    food: { opacity: 0 },
+                    heart: { opacity: 0 },
+                    cloud: { opacity: 1, top: "10%" },
+                    rain: { opacity: 1 },
+                    rainbow: { opacity: 0 }
+                }
+            },
+            {
+                title: "计划泡汤",
+                description: "原定的出游可以不去 但连简单见面也没有 误会在小企鹅心中不断加深",
+                bgColor: "#E0E0E0",
+                penguinPos: "left-1/4",
+                squirrelPos: "right-1/4",
+                penguinText: "他是不是在躲着我...",
+                squirrelText: "（沉默）",
+                elements: {
+                    tree: { opacity: 0 },
+                    camera: { opacity: 0 },
+                    food: { opacity: 0 },
+                    heart: { opacity: 0 },
+                    cloud: { opacity: 1, top: "10%" },
+                    rain: { opacity: 1 },
+                    rainbow: { opacity: 0 }
+                }
+            },
+            {
+                title: "吵架",
+                description: "误会越来越深，他们终于大吵了一架 ",
+                bgColor: "#FFCDB2",
+                penguinPos: "left-1/4",
+                squirrelPos: "right-1/4",
+                penguinText: "如果你不想理我，那就算了！",
+                squirrelText: "对不起 我不是故意的...我只是有点心烦...",
+                elements: {
+                    tree: { opacity: 0 },
+                    camera: { opacity: 0 },
+                    food: { opacity: 0 },
+                    heart: { opacity: 0 },
+                    cloud: { opacity: 1, top: "10%" },
+                    rain: { opacity: 1 },
+                    rainbow: { opacity: 0 }
+                }
+            },
+            {
+                title: "道歉",
+                description: "小企鹅冷静下来后，为自己不合时宜的情绪宣泄 向小松鼠道歉 ",
+                bgColor: "#FFE5D9",
+                penguinPos: "left-1/3",
+                squirrelPos: "right-1/3",
+                penguinText: "对不起，我不应该那么冲动...",
+                squirrelText: "没关系，是我不好，让你担心了...",
+                elements: {
+                    tree: { opacity: 0 },
+                    camera: { opacity: 0 },
+                    food: { opacity: 0 },
+                    heart: { opacity: 0 },
+                    cloud: { opacity: 0 },
+                    rain: { opacity: 0 },
+                    rainbow: { opacity: 0 }
+                }
+            },
+            {
+                title: "道歉",
+                description: "小企鹅冷静下来后，为自己不合时宜的情绪宣泄 向小松鼠道歉 ",
+                bgColor: "#FFE5D9",
+                penguinPos: "left-[40%]",
+                squirrelPos: "right-[40%]",
+                penguinText: "不知道我的陪伴对你有没有用 但我想让你知道",
+                squirrelText: "有！有的",
+                elements: {
+                    tree: { opacity: 0 },
+                    camera: { opacity: 0 },
+                    food: { opacity: 0 },
+                    heart: { opacity: 0 },
+                    cloud: { opacity: 0 },
+                    rain: { opacity: 0 },
+                    rainbow: { opacity: 0 }
+                }
+            },
+            {
+                title: "和好但未如初",
+                description: "虽然两人和好了，但关系却不像以前那么亲密了...",
+                bgColor: "#E0E0E0",
+                penguinPos: "left-1/3",
+                squirrelPos: "right-1/3",
+                penguinText: "小松鼠没有以前爱说话了 只有小企鹅需求旺盛。",
+                squirrelText: "（沉默）",
+                elements: {
+                    tree: { opacity: 0 },
+                    camera: { opacity: 0 },
+                    food: { opacity: 0 },
+                    heart: { opacity: 0 },
+                    cloud: { opacity: 1, top: "10%" },
+                    rain: { opacity: 0 },
+                    rainbow: { opacity: 0 }
+                }
+            },
+                
+            {
+                title: "独角戏",
+                description: "小企鹅想了好多话要和小松鼠说 但都未有机会说出口",
+                bgColor: "#E0E0E0",
+                penguinPos: "left-1/2",
+                squirrelPos: "right-full",
+                penguinText: "其实 我想告诉你 我不只是可以陪你吃喝玩乐...",
+                squirrelText: "",
+                elements: {
+                    tree: { opacity: 0 },
+                    camera: { opacity: 0 },
+                    food: { opacity: 0 },
+                    heart: { opacity: 0 },
+                    cloud: { opacity: 1, top: "10%" },
+                    rain: { opacity: 1 },
+                    rainbow: { opacity: 0 }
+                }
+            },
+            {
+                title: "独角戏",
+                description: "小企鹅特别想让小松鼠开心 但无能为力",
+                bgColor: "#E0E0E0",
+                penguinPos: "left-1/2",
+                squirrelPos: "right-full",
+                penguinText: "原来和我见面 并不能让你开心...",
+                squirrelText: "",
+                elements: {
+                    tree: { opacity: 0 },
+                    camera: { opacity: 0 },
+                    food: { opacity: 0 },
+                    heart: { opacity: 0 },
+                    cloud: { opacity: 1, top: "10%" },
+                    rain: { opacity: 1 },
+                    rainbow: { opacity: 0 }
+                }
+            },
+            {
+                title: "独角戏",
+                description: "想见你 但要你也想见我才行",
+                bgColor: "#E0E0E0",
+                penguinPos: "left-1/2",
+                squirrelPos: "right-full",
+                penguinText: "其实特别想见的时期已经过了 只是好怕想着想着就不想了......",
+                squirrelText: "",
+                elements: {
+                    tree: { opacity: 0 },
+                    camera: { opacity: 0 },
+                    food: { opacity: 0 },
+                    heart: { opacity: 0 },
+                    cloud: { opacity: 1, top: "10%" },
+                    rain: { opacity: 1 },
+                    rainbow: { opacity: 0 }
+                }
+            },
+            {
+                title: "独角戏",
+                description: "小企鹅决定暂时放下，不去想那么多 不再为难自己",
+                bgColor: "#E0E0E0",
+                penguinPos: "left-1/2",
+                squirrelPos: "right-full",
+                penguinText: "有些事情 不是光靠一只鹅的力量可以解决的",
+                squirrelText: "",
+                elements: {
+                    tree: { opacity: 0 },
+                    camera: { opacity: 0 },
+                    food: { opacity: 0 },
+                    heart: { opacity: 0 },
+                    cloud: { opacity: 0 },
+                    rain: { opacity: 0 },
+                    rainbow: { opacity: 0 }
+                }
+            },
+            {
+                title: "独角戏",
+                description: "小企鹅的喜欢正在被失望一点点消耗...她也不想偷偷减分 但却无能为力",
+                bgColor: "#E0E0E0",
+                penguinPos: "left-1/2",
+                squirrelPos: "right-full",
+                penguinText: "失望在累积 我也不知道该怎么办...",
+                squirrelText: "",
+                elements: {
+                    tree: { opacity: 0 },
+                    camera: { opacity: 0 },
+                    food: { opacity: 0 },
+                    heart: { opacity: 0 },
+                    cloud: { opacity: 0 },
+                    rain: { opacity: 0 },
+                    rainbow: { opacity: 0 }
+                }
+            },
+            {
+                title: "独角戏",
+                description: "摆正定位 小企鹅依旧期待小松鼠的出现 但不再预设任何希望",
+                bgColor: "#C0C0C0",
+                penguinPos: "left-1/2",
+                squirrelPos: "right-full",
+                penguinText: "或许现在在他心里 我只是一个可以闲聊的朋友 其实 其实我一点也不喜欢聊天...",
+                squirrelText: "",
+                elements: {
+                    tree: { opacity: 0 },
+                    camera: { opacity: 0 },
+                    food: { opacity: 0 },
+                    heart: { opacity: 0 },
+                    cloud: { opacity: 0 },
+                    rain: { opacity: 0 },
+                    rainbow: { opacity: 0 }
+                }
+            },
+           {
+                title: "未完待续",
+                description: "虽然不知道他们最后的结局是什么，但是小企鹅遇见小松鼠很开心",
+                bgColor: "#D8E2DC",
+                // 调整站位
+                penguinPos: "left-[30%]",
+                squirrelPos: "right-[30%]",
+                elements: {
+                    tree: { opacity: 0 },
+                    camera: { opacity: 0 },
+                    food: { opacity: 0 },
+                    heart: { opacity: 0 },
+                    cloud: { opacity: 0 },
+                    rain: { opacity: 0 },
+                    rainbow: { opacity: 0 }
+                }
+            }
+        ];
+
+        // 当前场景索引
+        let currentSceneIndex = 0;
+        let autoPlayInterval;
+        let isPlaying = false;
+
+        // DOM 元素
+        const sceneContainer = document.getElementById('scene-container');
+        const sceneBg = document.getElementById('scene-bg');
+        const penguin = document.getElementById('penguin');
+        const squirrel = document.getElementById('squirrel');
+        const penguinText = document.getElementById('penguin-text');
+        const squirrelText = document.getElementById('squirrel-text');
+        const penguinDialog = document.getElementById('penguin-dialog');
+        const squirrelDialog = document.getElementById('squirrel-dialog');
+        const sceneTitle = document.getElementById('scene-title');
+        const sceneDescription = document.getElementById('scene-description');
+        const prevBtn = document.getElementById('prev-btn');
+        const nextBtn = document.getElementById('next-btn');
+        const restartBtn = document.getElementById('restart-btn');
+        const autoPlayBtn = document.getElementById('auto-play-btn');
+        const pauseBtn = document.getElementById('pause-btn');
+        const navbar = document.getElementById('navbar');
+        const elements = {
+            tree: document.getElementById('tree'),
+            camera: document.getElementById('camera'),
+            food: document.getElementById('food'),
+            heart: document.getElementById('heart'),
+            cloud: document.getElementById('cloud'),
+            rain: document.getElementById('rain'),
+            rainbow: document.getElementById('rainbow')
+        };
+        const bgm = document.getElementById('bgm');
+
+        // 创建雪花效果
+        function createSnow() {
+            const snowContainer = document.getElementById('snow-container');
+            snowContainer.innerHTML = '';
+
+            for (let i = 0; i < 50; i++) {
+                const snowflake = document.createElement('div');
+                const size = Math.random() * 5 + 2;
+
+                snowflake.style.position = 'absolute';
+                snowflake.style.width = `${size}px`;
+                snowflake.style.height = `${size}px`;
+                snowflake.style.background = 'white';
+                snowflake.style.borderRadius = '50%';
+                snowflake.style.opacity = Math.random() * 0.8 + 0.2;
+                snowflake.style.left = `${Math.random() * 100}%`;
+                snowflake.style.top = `${-Math.random() * 100}%`;
+                snowflake.style.animation = `slide-down ${Math.random() * 5 + 5}s linear infinite`;
+                snowflake.style.animationDelay = `${Math.random() * 5}s`;
+
+                snowContainer.appendChild(snowflake);
+            }
+        }
+
+        // 应用场景
+        function applyScene(sceneIndex) {
+            if (sceneIndex < 0 || sceneIndex >= scenes.length) return;
+
+            const scene = scenes[sceneIndex];
+
+            // 更新场景背景
+            sceneBg.style.backgroundColor = scene.bgColor;
+
+            // 更新角色位置
+            penguin.className = `absolute bottom-10 ${scene.penguinPos} transform -translate-x-1/2 transition-all duration-700 ease-out`;
+            squirrel.className = `absolute bottom-10 ${scene.squirrelPos} transform translate-x-1/2 transition-all duration-700 ease-out`;
+
+            // 更新对话框
+            penguinText.textContent = scene.penguinText;
+            squirrelText.textContent = scene.squirrelText;
+
+            // 显示/隐藏对话框
+            if (scene.penguinText) {
+                penguinDialog.style.opacity = '1';
+                setTimeout(() => {
+                    if (scene.squirrelText) {
+                        squirrelDialog.style.opacity = '1';
+                    }
+                }, 2000);
+            } else {
+                penguinDialog.style.opacity = '0';
+            }
+
+            if (scene.squirrelText) {
+                squirrelDialog.style.opacity = '1';
+            } else {
+                squirrelDialog.style.opacity = '0';
+            }
+
+            // 更新场景文本
+            sceneTitle.textContent = scene.title;
+            sceneDescription.textContent = scene.description;
+
+            // 更新场景元素
+            for (const elementName in elements) {
+                if (elements.hasOwnProperty(elementName)) {
+                    const element = elements[elementName];
+                    const elementData = scene.elements[elementName];
+
+                    if (elementData) {
+                        for (const styleProp in elementData) {
+                            if (elementData.hasOwnProperty(styleProp)) {
+                                element.style[styleProp] = elementData[styleProp];
+                            }
+                        }
+                    }
+                }
+            }
+
+            // 更新按钮状态
+            prevBtn.disabled = sceneIndex === 0;
+            nextBtn.disabled = sceneIndex === scenes.length - 1;
+
+            // 如果是最后一幕，禁用自动播放
+            if (sceneIndex === scenes.length - 1) {
+                autoPlayBtn.disabled = true;
+                pauseBtn.disabled = true;
+                isPlaying = false;
+            }
+        }
+
+        // 上一幕
+        function prevScene() {
+            if (currentSceneIndex > 0) {
+                currentSceneIndex--;
+                applyScene(currentSceneIndex);
+            }
+        }
+
+        // 下一幕
+        function nextScene() {
+            if (currentSceneIndex < scenes.length - 1) {
+                currentSceneIndex++;
+                applyScene(currentSceneIndex);
+            }
+        }
+
+        // 重新开始
+        function restartStory() {
+            currentSceneIndex = 0;
+            applyScene(currentSceneIndex);
+        }
+
+        // 自动播放
+        function autoPlay() {
+            if (!isPlaying) {
+                isPlaying = true;
+                autoPlayBtn.disabled = true;
+                pauseBtn.disabled = false;
+                autoPlayInterval = setInterval(() => {
+                    if (currentSceneIndex < scenes.length - 1) {
+                        nextScene();
+                    } else {
+                        clearInterval(autoPlayInterval);
+                        isPlaying = false;
+                        autoPlayBtn.disabled = true;
+                        pauseBtn.disabled = true;
+                    }
+                }, 7500);
+            }
+        }
+
+        // 暂停播放
+        function pausePlay() {
+            if (isPlaying) {
+                isPlaying = false;
+                autoPlayBtn.disabled = false;
+                pauseBtn.disabled = true;
+                clearInterval(autoPlayInterval);
+            }
+        }
+
+        // 尝试播放音频
+        function tryPlayAudio() {
+            if (bgm.paused) {
+                bgm.play().catch(() => {
+                    // 播放失败，等待用户交互
+                    document.addEventListener('click', () => {
+                        bgm.play();
+                    }, { once: true });
+                });
+            }
+        }
+
+        // 初始化
+        function init() {
+            createSnow();
+
+            // 音频加载完成后恢复音量
+            bgm.addEventListener('canplaythrough', function() {
+                bgm.muted = false;
+                bgm.volume = 1;
+                tryPlayAudio();
+            });
+
+            prevBtn.addEventListener('click', prevScene);
+            nextBtn.addEventListener('click', nextScene);
+            restartBtn.addEventListener('click', restartStory);
+            autoPlayBtn.addEventListener('click', autoPlay);
+            pauseBtn.addEventListener('click', pausePlay);
+
+            // 为选项按钮添加点击事件监听器
+            const option1 = document.getElementById('option-1');
+            const option2 = document.getElementById('option-2');
+            const option3 = document.getElementById('option-3');
+            const option4 = document.getElementById('option-4');
+
+            option1.addEventListener('click', () => {
+                alert('你很有想法噢 那下一集你来写吧');
+            });
+
+            option2.addEventListener('click', () => {
+                alert('他们一起建造温暖的家，听起来很温馨呢');
+            });
+
+            option3.addEventListener('click', () => {
+                alert('小松鼠要回到森林，那小企鹅会很伤心吧');
+            });
+
+            option4.addEventListener('click', () => {
+                alert('小松鼠会吗？反正 小企鹅只想和小松鼠玩！');
+            });
+        }
+
+        init();
+    </script>
+</body>
+
+</html>
