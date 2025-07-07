@@ -417,6 +417,10 @@
                     id="option-4">
                     他们遇到了其他动物朋友
                 </button>
+                <button class="px-4 py-2 bg-red-100 hover:bg-yellow-200 text-yellow-800 rounded-full transition-all"
+                    id="option-5">
+                    小企鹅选择离开
+                </button>
             </div>
             <p class="text-gray-500 text-sm">
                 故事未完待续... 请期待下一集的更新！
@@ -640,7 +644,7 @@
             },
             {
                 title: "计划泡汤",
-                description: "原定的出游可以不去 但连简单见面也没有 误会在小企鹅心中不断加深",
+                description: "原定的出游不去没关系 但连见一面也没有 误会在小企鹅心中不断加深",
                 bgColor: "#E0E0E0",
                 penguinPos: "left-1/4",
                 squirrelPos: "right-1/4",
@@ -803,7 +807,7 @@
             },
             {
                 title: "独角戏🐧",
-                description: "小企鹅的喜欢正在被失望一点点消耗...她也不想偷偷减分 但却无能为力",
+                description: "小企鹅的喜欢正在被失望一点点消耗...她也不想偷偷减分 但却无能为力 ",
                 bgColor: "#E0E0E0",
                 penguinPos: "left-1/2",
                 squirrelPos: "right-full",
@@ -820,8 +824,8 @@
                 }
             },
             {
-                title: "独角戏🐧",
-                description: "摆正定位 小企鹅依旧在等小松鼠的出现 但不再预设期望",
+                title: "摆正定位🐧",
+                description: "小企鹅依旧在等小松鼠的出现 但不再预设期望。 ”你不过只是他的路人甲“小企鹅的耳边经常听到这样的声音 于是小企鹅在坚定和后退之间来回摇摆..." ,
                 bgColor: "#C0C0C0",
                 penguinPos: "left-1/2",
                 squirrelPos: "right-full",
@@ -1065,9 +1069,10 @@
             const option2 = document.getElementById('option-2');
             const option3 = document.getElementById('option-3');
             const option4 = document.getElementById('option-4');
+            const option5 = document.getElementById('option-5');
 
             option1.addEventListener('click', () => {
-                alert('真的嘛 你这么敢想 那下一集你来写吧');
+                alert('真的嘛 你这么敢想 要不下一集你来写');
             });
 
             option2.addEventListener('click', () => {
@@ -1075,12 +1080,15 @@
             });
 
             option3.addEventListener('click', () => {
-                alert('小松鼠要回到森林，那小企鹅会很伤心吧');
+                alert('小松鼠要回到森林，那小企鹅会很伤心吧 但是也要允许一切如其所是嘛');
             });
 
             option4.addEventListener('click', () => {
-                alert('小松鼠会吗？反正 小企鹅只想和小松鼠玩！');
+                alert('小松鼠会吗？反正 小企鹅只想和小松鼠玩！除非...');
             });
+            option5.addEventListener('click', () => {
+            alert('那一定是高傲的小企鹅默默的攒下了好多好多失望... ');
+        });
         }
 
         init();
